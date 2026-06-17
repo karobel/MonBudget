@@ -1729,12 +1729,24 @@ init();
   const btnInstall = document.getElementById('pwa-banner-install');
   const btnClose = document.getElementById('pwa-banner-close');
 
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    // Afficher la bannière après 3 secondes
-    setTimeout(() => banner.classList.add('visible'), 3000);
-  });
+// Android
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => banner.classList.add('visible'), 3000);
+});
+
+// iOS
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isStandalone = window.navigator.standalone === true;
+if (isIOS && !isStandalone) {
+  setTimeout(() => {
+    banner.classList.add('visible');
+    document.querySelector('#pwa-banner .pwa-text strong').textContent = 'Installer MonBudget';
+    document.querySelector('#pwa-banner .pwa-text span').textContent = 'Appuyez sur ⎋ puis "Sur l\'écran d\'accueil"';
+    document.getElementById('pwa-banner-install').style.display = 'none';
+  }, 3000);
+}
 
   btnInstall.addEventListener('click', async () => {
     banner.classList.remove('visible');
